@@ -1,5 +1,7 @@
 import gensim
 import codecs
+
+import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
 import xlrd
@@ -45,18 +47,27 @@ plt.rcParams['font.sans-serif']=['SimHei'] #用来正常显示中文标签
 plt.rcParams['axes.unicode_minus']=False #用来正常显示负号
 visualizeVecs = []
 # try:
-visualizeVecs = [word_vectors[word] for word in visualizeWords]
+# visualizeVecs = [word_vectors[word] for word in visualizeWords]
+visualizeWordsModify = []
+for word in visualizeWords:
+    try:
+        visualizeVecs.append(word_vectors[word])
+        visualizeWordsModify.append(word)
+    except:
+        print("发生异常")
+        continue
 # except:
 #     print("发生异常")
 # visualizeVecs = word_vectors[visualizeIdx, :]
+plt.figure(figsize=(50, 40), dpi=80)
 temp = (visualizeVecs - np.mean(visualizeVecs, axis=0))
 covariance = 1.0 / len(visualizeWords) * temp.T.dot(temp)
 U,S,V = np.linalg.svd(covariance)
 coord = temp.dot(U[:,0:2])
 
-for i in range(len(visualizeWords)):
-    plt.text(coord[i,0], coord[i,1], visualizeWords[i],
-        bbox=dict(facecolor='green', alpha=0.1))
+for i in range(len(visualizeWordsModify)):
+    plt.text(coord[i,0], coord[i,1], visualizeWordsModify[i],
+        bbox=dict(facecolor='green', alpha=0.05))
 
 plt.xlim((np.min(coord[:,0]), np.max(coord[:,0])))
 plt.ylim((np.min(coord[:,1]), np.max(coord[:,1])))
